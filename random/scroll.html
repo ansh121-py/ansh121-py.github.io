@@ -44,6 +44,7 @@ body {
 /* Start positions */
 .hello-left {
   left: -60%;
+  display: block;
 }
 
 .hello-right {
@@ -64,7 +65,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 /* LEFT → RIGHT */
 gsap.to(".hello-left", {
-  x: "80vw",
+  x: "100vw",
   scrollTrigger: {
     trigger: document.body,
     start: "top top",
@@ -75,7 +76,7 @@ gsap.to(".hello-left", {
 
 /* RIGHT → LEFT */
 gsap.to(".hello-right", {
-  x: "-80vw",
+  x: "-100vw",
   scrollTrigger: {
     trigger: document.body,
     start: "top top",
