@@ -1,0 +1,17 @@
+.div{
+    color: white;
+    font-size: 20px;
+    margin: 0px;
+    padding: 50px;
+}
+.nav-bar{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    background-color: rgb(2, 78, 128);
+    margin: 0px;
+    padding: 0px;
+    height: 60px;
+    align-items: center;
+    
+}
