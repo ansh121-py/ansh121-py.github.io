@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random — Ansh Mistry</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="noise"></div>
+  <nav>
+    <a href="index.html" class="nav-logo">AM</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="random.html" class="active">Random</a></li>
+    </ul>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <main class="page-main">
+    <div class="page-header">
+      <span class="mono page-eyebrow">// Miscellaneous</span>
+      <h1 class="page-title">Random</h1>
+      <p class="page-subtitle">
+        A corner of the internet for fun experiments, tools, and things that don't fit anywhere else.
+      </p>
+    </div>
+
+    <div class="random-grid">
+
+      <a href="random/digit-draw.html" class="random-card" style="--c:#b5ff4d">
+        <div class="random-card-icon">✏️</div>
+        <h3>Digit Recognizer</h3>
+        <p>Draw a digit (0–9) and let my ML model predict what you drew. Powered by a Python backend.</p>
+        <span class="mono rc-link">Open →</span>
+      </a>
+
+      <!-- EDIT: Add more random cards here. Duplicate the block above. -->
+      <!--
+      <a href="random/your-page.html" class="random-card" style="--c:#ff6b35">
+        <div class="random-card-icon">🎲</div>
+        <h3>Your Thing Here</h3>
+        <p>Description of another random page or tool.</p>
+        <span class="mono rc-link">Open →</span>
+      </a>
+      -->
+
+      <div class="random-card placeholder-card" style="--c:#333">
+        <div class="random-card-icon">＋</div>
+        <h3>Coming Soon</h3>
+        <p>More experiments on the way. Check back later.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <span class="mono">© 2025 Ansh Mistry</span>
+    <span class="mono">Built with ♥</span>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

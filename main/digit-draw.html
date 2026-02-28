@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digit Recognizer — Ansh Mistry</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Digit Draw specific styles ── */
+    .digit-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+      max-width: 900px;
+      margin: 3rem auto 0;
+    }
+    @media (max-width: 700px) {
+      .digit-layout { grid-template-columns: 1fr; }
+    }
+
+    .canvas-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    #drawCanvas {
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      cursor: crosshair;
+      background: #111;
+      box-shadow: 0 0 40px rgba(181,255,77,0.12);
+      touch-action: none;
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 1;
+    }
+
+    .canvas-controls {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+      max-width: 360px;
+    }
+    .canvas-controls button {
+      flex: 1;
+    }
+
+    /* Result panel */
+    .result-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+    .result-panel h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .prediction-display {
+      text-align: center;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 1.5rem;
+    }
+    .pred-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 7rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+    .pred-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+    .pred-confidence {
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      color: var(--fg);
+      margin-top: 0.3rem;
+    }
+
+    /* Confidence bars */
+    .conf-bars { display: flex; flex-direction: column; gap: 0.5rem; }
+    .conf-row {
+      display: grid;
+      grid-template-columns: 20px 1fr 40px;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .conf-digit { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--muted); }
+    .conf-bar-bg { background: rgba(255,255,255,0.06); border-radius: 100px; height: 6px; overflow: hidden; }
+    .conf-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 100px;
+      width: 0%;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .conf-pct { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); text-align: right; }
+
+    /* API info box */
+    .api-info {
+      margin-top: 2rem;
+      padding: 1.2rem;
+      background: rgba(181,255,77,0.05);
+      border: 1px solid rgba(181,255,77,0.2);
+      border-radius: 10px;
+    }
+    .api-info h3 { 
+      font-family: 'DM Mono', monospace; 
+      font-size: 0.8rem; 
+      color: var(--accent); 
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .api-info p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .api-info code {
+      background: rgba(255,255,255,0.08);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      color: var(--fg);
+    }
+
+    .api-url-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.8rem;
+    }
+    .api-url-row input {
+      flex: 1;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.5rem 0.8rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: var(--fg);
+    }
+    .api-url-row input:focus { outline: 1px solid var(--accent); }
+    .api-url-row button {
+      padding: 0.5rem 0.8rem;
+      font-size: 0.78rem;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #666;
+      margin-right: 0.4rem;
+      transition: background 0.3s;
+    }
+    .status-dot.connected { background: #b5ff4d; box-shadow: 0 0 6px #b5ff4d; }
+    .status-dot.error { background: #ff4d4d; }
+
+    .draw-hint {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <nav>
+    <a href="../index.html" class="nav-logo">AM</a>
+    <ul>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+      <li><a href="../random.html" class="active">Random</a></li>
+    </ul>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <main class="page-main">
+    <div class="page-header">
+      <span class="mono page-eyebrow">// Random / Digit Recognizer</span>
+      <h1 class="page-title">Digit Draw</h1>
+      <p class="page-subtitle">Draw a digit (0–9) on the canvas and let the ML model predict it.</p>
+    </div>
+
+    <div class="digit-layout">
+
+      <!-- ── Canvas Side ── -->
+      <div class="canvas-wrapper">
+        <canvas id="drawCanvas" width="280" height="280"></canvas>
+        <p class="draw-hint">Draw with mouse or finger</p>
+        <div class="canvas-controls">
+          <button class="btn-primary" id="predictBtn" onclick="sendToAPI()">Predict →</button>
+          <button class="btn-ghost" onclick="clearCanvas()">Clear</button>
+        </div>
+
+        <!-- Brush size -->
+        <div style="width:100%;max-width:360px;display:flex;align-items:center;gap:1rem;margin-top:0.5rem">
+          <label class="mono" style="font-size:0.78rem;color:var(--muted);white-space:nowrap">Brush size</label>
+          <input type="range" id="brushSize" min="8" max="40" value="18" style="flex:1;accent-color:var(--accent)" />
+          <span class="mono" id="brushLabel" style="font-size:0.78rem;color:var(--muted);width:24px">18</span>
+        </div>
+      </div>
+
+      <!-- ── Result Side ── -->
+      <div class="result-panel">
+        <h2>Prediction</h2>
+
+        <div class="prediction-display">
+          <div class="pred-number" id="predNumber">?</div>
+          <div class="pred-label">predicted digit</div>
+          <div class="pred-confidence" id="predConf">—</div>
+        </div>
+
+        <!-- Confidence bars for each digit 0–9 -->
+        <div class="conf-bars" id="confBars">
+          <!-- Generated by JS -->
+        </div>
+
+        <!-- Python API connection panel -->
+        <div class="api-info">
+          <h3><span class="status-dot" id="statusDot"></span>Python Backend</h3>
+          <p>
+            Connect your Python prediction server below. Your server should accept a 
+            <code>POST</code> to <code>/predict</code> with a JSON body containing 
+            <code>{ "image": "&lt;base64 PNG&gt;" }</code> and return 
+            <code>{ "digit": 7, "confidence": 0.98, "probabilities": [0.01, …] }</code>.
+          </p>
+          <div class="api-url-row">
+            <input type="text" id="apiUrl" value="http://localhost:5000/predict" placeholder="http://localhost:5000/predict" />
+            <button class="btn-ghost" onclick="testConnection()" style="padding:0.5rem 0.8rem;font-size:0.78rem">Test</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span class="mono">© 2025 Ansh Mistry</span>
+    <span class="mono">Built with ♥</span>
+  </footer>
+
+  <script src="../main.js"></script>
+  <script>
+    /* ─── Canvas Drawing ─── */
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let brushSize = 18;
+
+    // Retina / DPR support
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    document.getElementById('brushSize').addEventListener('input', e => {
+      brushSize = +e.target.value;
+      document.getElementById('brushLabel').textContent = brushSize;
+    });
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const src = e.touches ? e.touches[0] : e;
+      return {
+        x: src.clientX - rect.left,
+        y: src.clientY - rect.top
+      };
+    }
+
+    function startDraw(e) { 
+      drawing = true; 
+      const p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      e.preventDefault();
+    }
+    function draw(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const p = getPos(e);
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    }
+    function stopDraw() { drawing = false; ctx.beginPath(); }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDraw);
+
+    function clearCanvas() {
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      resetResults();
+    }
+
+    /* ─── Confidence Bars Init ─── */
+    const confBarsEl = document.getElementById('confBars');
+    for (let i = 0; i <= 9; i++) {
+      confBarsEl.innerHTML += `
+        <div class="conf-row">
+          <span class="conf-digit">${i}</span>
+          <div class="conf-bar-bg"><div class="conf-bar-fill" id="bar${i}"></div></div>
+          <span class="conf-pct" id="pct${i}">—</span>
+        </div>`;
+    }
+
+    function resetResults() {
+      document.getElementById('predNumber').textContent = '?';
+      document.getElementById('predConf').textContent = '—';
+      for (let i = 0; i <= 9; i++) {
+        document.getElementById(`bar${i}`).style.width = '0%';
+        document.getElementById(`pct${i}`).textContent = '—';
+      }
+    }
+
+    function updateResults(digit, confidence, probs) {
+      document.getElementById('predNumber').textContent = digit;
+      document.getElementById('predConf').textContent = `${(confidence * 100).toFixed(1)}% confidence`;
+      if (probs && probs.length === 10) {
+        for (let i = 0; i <= 9; i++) {
+          const pct = (probs[i] * 100).toFixed(1);
+          document.getElementById(`bar${i}`).style.width = pct + '%';
+          document.getElementById(`pct${i}`).textContent = pct + '%';
+        }
+      }
+    }
+
+    /* ─── API Communication ─── */
+    function getApiUrl() {
+      return document.getElementById('apiUrl').value.trim() || 'http://localhost:5000/predict';
+    }
+
+    async function sendToAPI() {
+      const btn = document.getElementById('predictBtn');
+      btn.textContent = 'Predicting…';
+      btn.disabled = true;
+
+      // Scale canvas down to 28×28 (MNIST format) before sending
+      const offscreen = document.createElement('canvas');
+      offscreen.width = 28; offscreen.height = 28;
+      const offCtx = offscreen.getContext('2d');
+      offCtx.drawImage(canvas, 0, 0, 28, 28);
+      const base64 = offscreen.toDataURL('image/png').split(',')[1];
+
+      try {
+        const res = await fetch(getApiUrl(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64 })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        /*
+          Expected response format from your Python server:
+          {
+            "digit": 7,
+            "confidence": 0.98,
+            "probabilities": [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.98, 0.01, 0.01]
+          }
+          The "probabilities" array should have 10 values (0–9).
+        */
+        updateResults(data.digit, data.confidence, data.probabilities);
+        setStatus('connected');
+      } catch (err) {
+        console.error('Prediction error:', err);
+        document.getElementById('predNumber').textContent = '✗';
+        document.getElementById('predConf').textContent = 'Could not reach server';
+        setStatus('error');
+      }
+
+      btn.textContent = 'Predict →';
+      btn.disabled = false;
+    }
+
+    async function testConnection() {
+      setStatus('');
+      try {
+        const res = await fetch(getApiUrl().replace('/predict', '/health') || getApiUrl(), {
+          method: 'GET', signal: AbortSignal.timeout(3000)
+        });
+        setStatus(res.ok ? 'connected' : 'error');
+        alert(res.ok ? '✅ Server is reachable!' : `⚠️ Server responded with status ${res.status}`);
+      } catch {
+        setStatus('error');
+        alert('❌ Could not reach the server. Make sure your Python server is running.');
+      }
+    }
+
+    function setStatus(state) {
+      const dot = document.getElementById('statusDot');
+      dot.className = 'status-dot' + (state ? ' ' + state : '');
+    }
+  </script>
+</body>
+</html>
