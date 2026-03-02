@@ -250,7 +250,7 @@
             <code>{ "digit": 7, "confidence": 0.98, "probabilities": [0.01, …] }</code>.
           </p>
           <div class="api-url-row">
-            <input type="text" id="apiUrl" value="http://localhost:5000/predict" placeholder="http://localhost:5000/predict" />
+            <input type="text" id="apiUrl" value="https://mistryansh61.pythonanywhere.com/predict" placeholder="https://mistryansh61.pythonanywhere.com/predict" />
             <button class="btn-ghost" onclick="testConnection()" style="padding:0.5rem 0.8rem;font-size:0.78rem">Test</button>
           </div>
         </div>
@@ -366,7 +366,7 @@
 
     /* ─── API Communication ─── */
     function getApiUrl() {
-      return document.getElementById('apiUrl').value.trim() || 'http://localhost:5000/predict';
+      return document.getElementById('apiUrl').value.trim() || 'https://mistryansh61.pythonanywhere.com/predict';
     }
 
     async function sendToAPI() {
