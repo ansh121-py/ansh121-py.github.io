@@ -244,27 +244,14 @@
         <div class="api-info">
           <h3><span class="status-dot" id="statusDot"></span>Python Backend</h3>
           <p>
-            Two server slots — toggle between them. Your server should accept a 
-            <code>POST</code> to <code>/predict</code> and return 
+            Connect your Python prediction server below. Your server should accept a 
+            <code>POST</code> to <code>/predict</code> with a JSON body containing 
+            <code>{ "image": "&lt;base64 PNG&gt;" }</code> and return 
             <code>{ "digit": 7, "confidence": 0.98, "probabilities": [0.01, …] }</code>.
           </p>
-
-          <!-- Server toggle -->
-          <div style="display:flex;gap:0.5rem;margin-top:0.8rem;">
-            <button id="serverToggle1" class="btn-ghost" onclick="selectServer(1)" style="flex:1;padding:0.4rem 0.6rem;font-size:0.75rem;border-color:var(--accent);color:var(--accent)">● Server 1</button>
-            <button id="serverToggle2" class="btn-ghost" onclick="selectServer(2)" style="flex:1;padding:0.4rem 0.6rem;font-size:0.75rem">○ Server 2</button>
-          </div>
-
-          <!-- Server 1 -->
-          <div id="serverRow1" class="api-url-row">
-            <input type="text" id="apiUrl1" value="http://localhost:5000/predict" placeholder="Server 1 URL" />
-            <button class="btn-ghost" onclick="testConnection(1)" style="padding:0.5rem 0.8rem;font-size:0.78rem">Test</button>
-          </div>
-
-          <!-- Server 2 -->
-          <div id="serverRow2" class="api-url-row" style="display:none;">
-            <input type="text" id="apiUrl2" value="" placeholder="Server 2 URL (e.g. https://…pythonanywhere.com/predict)" />
-            <button class="btn-ghost" onclick="testConnection(2)" style="padding:0.5rem 0.8rem;font-size:0.78rem">Test</button>
+          <div class="api-url-row">
+            <input type="text" id="apiUrl" value="http://localhost:5000/predict" placeholder="http://localhost:5000/predict" />
+            <button class="btn-ghost" onclick="testConnection()" style="padding:0.5rem 0.8rem;font-size:0.78rem">Test</button>
           </div>
         </div>
       </div>
@@ -377,28 +364,9 @@
       }
     }
 
-    /* ─── Server Selection ─── */
-    let activeServer = 1;
-
-    function selectServer(n) {
-      activeServer = n;
-      document.getElementById('serverRow1').style.display = n === 1 ? 'flex' : 'none';
-      document.getElementById('serverRow2').style.display = n === 2 ? 'flex' : 'none';
-      document.getElementById('serverToggle1').style.borderColor = n === 1 ? 'var(--accent)' : '';
-      document.getElementById('serverToggle1').style.color = n === 1 ? 'var(--accent)' : '';
-      document.getElementById('serverToggle1').textContent = n === 1 ? '● Server 1' : '○ Server 1';
-      document.getElementById('serverToggle2').style.borderColor = n === 2 ? 'var(--accent)' : '';
-      document.getElementById('serverToggle2').style.color = n === 2 ? 'var(--accent)' : '';
-      document.getElementById('serverToggle2').textContent = n === 2 ? '● Server 2' : '○ Server 2';
-      setStatus('');
-    }
-
+    /* ─── API Communication ─── */
     function getApiUrl() {
-      const val = document.getElementById(`apiUrl${activeServer}`).value.trim();
-      return val || 'http://localhost:5000/predict';
-    }
-
-    async function sendToAPI() {;
+      return document.getElementById('apiUrl').value.trim() || 'http://localhost:5000/predict';
     }
 
     async function sendToAPI() {
@@ -421,12 +389,22 @@
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+
+        /*
+          Expected response format from your Python server:
+          {
+            "digit": 7,
+            "confidence": 0.98,
+            "probabilities": [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.98, 0.01, 0.01]
+          }
+          The "probabilities" array should have 10 values (0–9).
+        */
         updateResults(data.digit, data.confidence, data.probabilities);
         setStatus('connected');
       } catch (err) {
         console.error('Prediction error:', err);
         document.getElementById('predNumber').textContent = '✗';
-        document.getElementById('predConf').textContent = `Server ${activeServer} unreachable`;
+        document.getElementById('predConf').textContent = 'Could not reach server';
         setStatus('error');
       }
 
@@ -434,19 +412,17 @@
       btn.disabled = false;
     }
 
-    async function testConnection(n) {
-      const url = document.getElementById(`apiUrl${n}`).value.trim();
-      if (!url) { alert('Please enter a server URL first.'); return; }
+    async function testConnection() {
       setStatus('');
       try {
-        const res = await fetch(url.replace('/predict', '/health'), {
+        const res = await fetch(getApiUrl().replace('/predict', '/health') || getApiUrl(), {
           method: 'GET', signal: AbortSignal.timeout(3000)
         });
         setStatus(res.ok ? 'connected' : 'error');
-        alert(res.ok ? `✅ Server ${n} is reachable!` : `⚠️ Server ${n} responded with status ${res.status}`);
+        alert(res.ok ? '✅ Server is reachable!' : `⚠️ Server responded with status ${res.status}`);
       } catch {
         setStatus('error');
-        alert(`❌ Could not reach Server ${n}. Make sure it's running.`);
+        alert('❌ Could not reach the server. Make sure your Python server is running.');
       }
     }
 
