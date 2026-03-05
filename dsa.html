@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DSA Mastery in Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0f;
+    color: #e0e0e0;
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    padding: 48px 20px;
+  }
+
+  .container { max-width: 760px; margin: 0 auto; }
+
+  .label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: #444;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(52px, 10vw, 92px);
+    line-height: 0.93;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #fff 30%, #555);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h1 span {
+    background: linear-gradient(90deg, #00E5FF, #C77DFF, #F72585);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 0.2em;
+    margin-top: 12px;
+  }
+
+  .progress-box {
+    margin-top: 28px;
+    background: #0d0d14;
+    border: 1px solid #1a1a24;
+    border-radius: 4px;
+    padding: 14px 18px;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #444;
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+  }
+
+  .progress-track {
+    height: 4px;
+    background: #1a1a24;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00E5FF, #C77DFF, #F72585);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  .phases { margin-top: 48px; }
+
+  .phase-card {
+    border: 1px solid #1a1a24;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background: #0d0d14;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+  }
+
+  .phase-card:hover::before,
+  .phase-card.active::before { transform: scaleY(1); }
+  .phase-card:hover { border-color: #333; background: #111118; }
+  .phase-card.active { border-color: var(--accent); }
+  .phase-card.done { background: #0d120d; border-color: #1a2e1a; opacity: 0.78; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    user-select: none;
+  }
+
+  .phase-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 38px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.35;
+    letter-spacing: 2px;
+    min-width: 48px;
+  }
+
+  .phase-icon { font-size: 20px; }
+  .phase-info { flex: 1; }
+
+  .phase-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: #e0e0e0;
+  }
+
+  .phase-card.done .phase-title { color: #4a7a4a; }
+
+  .phase-dur {
+    font-size: 10px;
+    color: #444;
+    letter-spacing: 0.2em;
+    margin-top: 2px;
+  }
+
+  .check-btn {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #333;
+    border-radius: 2px;
+    background: none;
+    cursor: pointer;
+    font-size: 12px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .check-btn:hover { border-color: #666; }
+
+  .expand-arrow {
+    font-size: 11px;
+    color: #444;
+    margin-left: 6px;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+
+  .phase-card.active .expand-arrow { transform: rotate(180deg); }
+
+  .phase-body {
+    display: none;
+    border-top: 1px solid #1a1a24;
+  }
+
+  .phase-card.active .phase-body { display: block; }
+
+  .topic-item {
+    padding: 9px 18px;
+    border-bottom: 1px solid #13131e;
+  }
+
+  .topic-item:last-child { border-bottom: none; }
+
+  .topic-name {
+    font-size: 12px;
+    color: #ccc;
+    margin-bottom: 2px;
+  }
+
+  .topic-bullet {
+    color: var(--accent);
+    margin-right: 8px;
+    font-size: 10px;
+  }
+
+  .topic-detail {
+    font-size: 10px;
+    color: #484860;
+    padding-left: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .resources-row {
+    padding: 10px 18px 14px;
+    border-top: 1px solid #1a1a24;
+  }
+
+  .res-label {
+    font-size: 9px;
+    color: #333;
+    letter-spacing: 0.25em;
+    margin-bottom: 7px;
+  }
+
+  .res-tag {
+    display: inline-block;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 9px;
+    color: #666;
+    margin: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .tips {
+    margin-top: 40px;
+    padding: 20px 24px;
+    background: #0d0d14;
+    border: 1px solid #1a1a24;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #444;
+    line-height: 2;
+    letter-spacing: 0.05em;
+    margin-bottom: 60px;
+  }
+
+  .tips-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .tips p span { color: #777; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="label">// COMPLETE GUIDE</div>
+  <h1>DSA MASTERY<br><span>IN PYTHON</span></h1>
+  <p class="subtitle">10 PHASES · ~16 WEEKS · FROM ZERO TO INTERVIEW-READY</p>
+
+  <div class="progress-box">
+    <div class="progress-meta">
+      <span>PROGRESS</span>
+      <span id="prog-label">0/10 PHASES · 0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+    </div>
+  </div>
+
+  <div class="phases" id="phases"></div>
+
+  <div class="tips">
+    <div class="tips-title">// PRO TIPS</div>
+    <p>→ <span>Solve at least 5–10 LeetCode problems per phase before moving on</span></p>
+    <p>→ <span>Always understand the why — analyze time & space complexity every time</span></p>
+    <p>→ <span>Use Anki cards for patterns; spaced repetition beats cramming</span></p>
+    <p>→ <span>Track your progress: revisit wrong problems after 3 days</span></p>
+    <p>→ <span>Phase 09 (DP) is the hardest — spend extra time, don't rush it</span></p>
+  </div>
+
+</div>
+
+<script>
+const roadmap = [
+  {
+    phase: "01", title: "Python Foundations", color: "#00E5FF", duration: "1–2 weeks", icon: "🐍",
+    topics: [
+      { name: "Python syntax & data types", detail: "int, float, str, bool, None" },
+      { name: "Lists, Tuples, Sets, Dicts", detail: "Built-in data structures" },
+      { name: "Loops & Conditionals", detail: "for, while, if/elif/else" },
+      { name: "Functions & Recursion", detail: "def, *args, **kwargs, base cases" },
+      { name: "List Comprehensions", detail: "Pythonic way to process collections" },
+      { name: "Big O Notation Intro", detail: "O(1), O(n), O(n²), O(log n)" },
+    ],
+    resources: ["Python Docs", "Automate the Boring Stuff", "CS50P"]
+  },
+  {
+    phase: "02", title: "Arrays & Strings", color: "#69FF47", duration: "1–2 weeks", icon: "📦",
+    topics: [
+      { name: "Array traversal & manipulation", detail: "Indexing, slicing, reversal" },
+      { name: "Two Pointer technique", detail: "Opposite ends converging inward" },
+      { name: "Sliding Window", detail: "Fixed & variable size windows" },
+      { name: "Prefix Sums", detail: "Range query optimization" },
+      { name: "String manipulation", detail: "Palindromes, anagrams, substrings" },
+      { name: "Sorting algorithms", detail: "Bubble, Selection, Insertion, Merge, Quick" },
+    ],
+    resources: ["LeetCode Easy Arrays", "NeetCode 150", "Visualgo Sorting"]
+  },
+  {
+    phase: "03", title: "Linked Lists", color: "#FF6B6B", duration: "1 week", icon: "🔗",
+    topics: [
+      { name: "Singly Linked List", detail: "Node class, head pointer" },
+      { name: "Doubly Linked List", detail: "prev & next pointers" },
+      { name: "Fast & Slow Pointers", detail: "Floyd's cycle detection" },
+      { name: "Reversal patterns", detail: "Iterative & recursive approaches" },
+      { name: "Merge & sort lists", detail: "Merge two sorted linked lists" },
+      { name: "LRU Cache concept", detail: "OrderedDict or doubly LL + hashmap" },
+    ],
+    resources: ["Visualgo.net", "LeetCode Linked List tag", "NeetCode Linked Lists"]
+  },
+  {
+    phase: "04", title: "Stacks & Queues", color: "#FFD93D", duration: "1 week", icon: "🥞",
+    topics: [
+      { name: "Stack with list/deque", detail: "LIFO: push, pop, peek" },
+      { name: "Queue & Deque", detail: "FIFO, collections.deque" },
+      { name: "Monotonic Stack", detail: "Next greater/smaller element" },
+      { name: "Valid Parentheses", detail: "Classic bracket matching problem" },
+      { name: "Min Stack", detail: "Track minimum in O(1)" },
+      { name: "BFS with Queue", detail: "Level-order traversal pattern" },
+    ],
+    resources: ["LeetCode Stack tag", "NeetCode Stacks playlist"]
+  },
+  {
+    phase: "05", title: "Hash Maps & Sets", color: "#C77DFF", duration: "1 week", icon: "#️⃣",
+    topics: [
+      { name: "dict & set in Python", detail: "O(1) average lookup & insert" },
+      { name: "Frequency counting", detail: "Counter from collections module" },
+      { name: "Two Sum pattern", detail: "Complement lookup trick" },
+      { name: "Grouping & bucketing", detail: "Group anagrams, isomorphic strings" },
+      { name: "Hashing custom objects", detail: "__hash__ and __eq__ methods" },
+      { name: "defaultdict & Counter", detail: "Powerful Python collections tools" },
+    ],
+    resources: ["Python collections docs", "LeetCode Hashing problems"]
+  },
+  {
+    phase: "06", title: "Trees", color: "#06D6A0", duration: "2–3 weeks", icon: "🌳",
+    topics: [
+      { name: "Binary Tree basics", detail: "Node class, left/right children" },
+      { name: "DFS: Inorder / Pre / Post", detail: "Recursive & iterative DFS" },
+      { name: "BFS / Level Order", detail: "Queue-based traversal" },
+      { name: "Binary Search Tree", detail: "Insert, delete, search in O(log n)" },
+      { name: "Tree DP", detail: "Diameter, max path sum, height" },
+      { name: "Trie (Prefix Tree)", detail: "Word search & autocomplete" },
+    ],
+    resources: ["Visualgo Trees", "LeetCode Tree tag", "NeetCode Trees"]
+  },
+  {
+    phase: "07", title: "Heaps & Priority Queues", color: "#FF9F1C", duration: "1 week", icon: "⛰️",
+    topics: [
+      { name: "Min Heap / Max Heap", detail: "heapq module in Python" },
+      { name: "heapq.heappush / heappop", detail: "O(log n) push & pop" },
+      { name: "K largest / K smallest", detail: "Classic heap interview problems" },
+      { name: "Merge K sorted lists", detail: "Heap + pointer pattern" },
+      { name: "Top K Frequent Elements", detail: "Counter + heap combination" },
+      { name: "Median from data stream", detail: "Two heaps approach" },
+    ],
+    resources: ["Python heapq docs", "LeetCode Heap tag"]
+  },
+  {
+    phase: "08", title: "Graphs", color: "#4CC9F0", duration: "2–3 weeks", icon: "🕸️",
+    topics: [
+      { name: "Graph representations", detail: "Adjacency list & matrix" },
+      { name: "DFS & BFS on graphs", detail: "Visited set to avoid cycles" },
+      { name: "Topological Sort", detail: "Kahn's algo & DFS approach" },
+      { name: "Union-Find / DSU", detail: "Path compression & union by rank" },
+      { name: "Dijkstra's Algorithm", detail: "Weighted graphs, min heap" },
+      { name: "Bellman-Ford & Floyd-Warshall", detail: "Negative weights, all-pairs" },
+    ],
+    resources: ["Visualgo Graph", "LeetCode Graph tag", "William Fiset Graph Theory"]
+  },
+  {
+    phase: "09", title: "Dynamic Programming", color: "#F72585", duration: "3–4 weeks", icon: "🧮",
+    topics: [
+      { name: "Memoization (Top-Down)", detail: "@lru_cache or manual dict cache" },
+      { name: "Tabulation (Bottom-Up)", detail: "DP table iteration" },
+      { name: "1D DP patterns", detail: "Fibonacci, climbing stairs, house robber" },
+      { name: "2D DP patterns", detail: "Grid paths, edit distance, unique paths" },
+      { name: "Knapsack variants", detail: "0/1, unbounded, bounded knapsack" },
+      { name: "LCS / LIS", detail: "Longest common / increasing subsequence" },
+    ],
+    resources: ["Aditya Verma DP playlist", "LeetCode DP Study Plan", "NeetCode DP"]
+  },
+  {
+    phase: "10", title: "Advanced & Interview Prep", color: "#FF6B9D", duration: "Ongoing", icon: "🏆",
+    topics: [
+      { name: "Backtracking", detail: "N-Queens, Sudoku, permutations, subsets" },
+      { name: "Greedy Algorithms", detail: "Activity selection, Huffman encoding" },
+      { name: "Segment Trees & BIT", detail: "Range queries & point updates" },
+      { name: "Advanced Graph algos", detail: "MST: Kruskal's & Prim's" },
+      { name: "Math & Bit Manipulation", detail: "XOR tricks, bit masking, power of 2" },
+      { name: "Mock interviews", detail: "LeetCode contests, Pramp, Interviewing.io" },
+    ],
+    resources: ["LeetCode Top Interview 150", "Blind 75", "Grind 169"]
+  },
+];
+
+const completed = new Set();
+
+function updateProgress() {
+  const pct = Math.round((completed.size / roadmap.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  const label = document.getElementById('prog-label');
+  label.textContent = completed.size + '/' + roadmap.length + ' PHASES · ' + pct + '%';
+  label.style.color = completed.size > 0 ? '#00E5FF' : '#444';
+}
+
+function buildRoadmap() {
+  const container = document.getElementById('phases');
+
+  roadmap.forEach(function(p, i) {
+    const card = document.createElement('div');
+    card.className = 'phase-card';
+    card.style.setProperty('--accent', p.color);
+
+    const topicsHTML = p.topics.map(function(t) {
+      return '<div class="topic-item">' +
+        '<div class="topic-name"><span class="topic-bullet">▸</span>' + t.name + '</div>' +
+        '<div class="topic-detail">' + t.detail + '</div>' +
+        '</div>';
+    }).join('');
+
+    const resHTML = p.resources.map(function(r) {
+      return '<span class="res-tag">' + r + '</span>';
+    }).join('');
+
+    card.innerHTML =
+      '<div class="phase-header">' +
+        '<div class="phase-num">' + p.phase + '</div>' +
+        '<div class="phase-icon">' + p.icon + '</div>' +
+        '<div class="phase-info">' +
+          '<div class="phase-title">' + p.title + '</div>' +
+          '<div class="phase-dur">⏱ ' + p.duration + '</div>' +
+        '</div>' +
+        '<button class="check-btn" title="Mark complete"></button>' +
+        '<div class="expand-arrow">▼</div>' +
+      '</div>' +
+      '<div class="phase-body">' +
+        '<div class="topic-list">' + topicsHTML + '</div>' +
+        '<div class="resources-row">' +
+          '<div class="res-label">RESOURCES</div>' +
+          resHTML +
+        '</div>' +
+      '</div>';
+
+    card.addEventListener('click', function(e) {
+      if (e.target.classList.contains('check-btn')) return;
+      card.classList.toggle('active');
+    });
+
+    const btn = card.querySelector('.check-btn');
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (completed.has(i)) {
+        completed.delete(i);
+        card.classList.remove('done');
+        btn.style.background = 'none';
+        btn.style.borderColor = '#333';
+        btn.textContent = '';
+      } else {
+        completed.add(i);
+        card.classList.add('done');
+        btn.style.background = p.color;
+        btn.style.borderColor = p.color;
+        btn.textContent = '✓';
+      }
+      updateProgress();
+    });
+
+    container.appendChild(card);
+  });
+}
+
+buildRoadmap();
+updateProgress();
+</script>
+</body>
+</html>
