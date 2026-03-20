@@ -43,12 +43,14 @@ body {
 
 /* Start positions */
 .hello-left {
-  left: -30%;
-  display: block;
+  left: -1%;
+  font-size: 10pc;
 }
 
 .hello-right {
-  right: -30%;
+  right: -1%;
+  font-size: 10pc;
+  margin-right: 50px;
 }
 </style>
 </head>
@@ -56,7 +58,11 @@ body {
 <body>
 
 <section class="hero">
-  <h1 class="hello hello-left">hello</h1>
+  <div style="
+    display: flex;
+    justify-content: flex-end;
+    ">
+  <h1 class="hello hello-left">hello</h1></div>
   <h1 class="hello hello-right">hello</h1>
 </section>
 
@@ -65,7 +71,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 /* LEFT → RIGHT */
 gsap.to(".hello-left", {
-  x: "100vw",
+  x: "80vw",
   scrollTrigger: {
     trigger: document.body,
     start: "top top",
@@ -76,7 +82,7 @@ gsap.to(".hello-left", {
 
 /* RIGHT → LEFT */
 gsap.to(".hello-right", {
-  x: "-100vw",
+  x: "-50vw",
   scrollTrigger: {
     trigger: document.body,
     start: "top top",
