@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Ansh Mistry</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="noise"></div>
+  <nav>
+    <a href="index.html" class="nav-logo">AM</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="random.html">Random</a></li>
+    </ul>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <main class="page-main">
+    <div class="page-header">
+      <span class="mono page-eyebrow">// My Work</span>
+      <h1 class="page-title">Projects</h1>
+    </div>
+
+    <!-- FILTER BUTTONS — EDIT categories to match your projects -->
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="web">Web</button>
+      <button class="filter-btn" data-filter="ml">ML / AI</button>
+      <button class="filter-btn" data-filter="other">Other</button>
+    </div>
+
+    <div class="projects-full-grid">
+
+      <!--
+        EDIT: Duplicate a .project-full-card block for each project.
+        Set data-cat to match one of the filter buttons above (web, ml, other).
+        Set style="--c:#hexcolor" to give it a unique accent color.
+      -->
+
+      <div class="project-full-card" data-cat="web" style="--c:#ff6b35">
+        <div class="pfc-header">
+          <span class="pfc-num mono">01</span>
+          <div class="pfc-tags">
+            <span class="skill-pill">HTML/CSS</span>
+            <span class="skill-pill">JavaScript</span>
+          </div>
+        </div>
+        <h2>Project Name Here</h2>
+        <p class="pfc-desc">
+          A longer description of the project. What does it do? Why did you build it? 
+          What did you learn? Edit this text to describe your project.
+        </p>
+        <div class="pfc-links">
+          <!-- EDIT: Replace # with actual links -->
+          <a href="#" class="btn-ghost-sm" target="_blank">GitHub →</a>
+          <a href="#" class="btn-ghost-sm" target="_blank">Live Demo →</a>
+        </div>
+      </div>
+
+      <div class="project-full-card" data-cat="ml" style="--c:#00e5ff">
+        <div class="pfc-header">
+          <span class="pfc-num mono">02</span>
+          <div class="pfc-tags">
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">TensorFlow</span>
+          </div>
+        </div>
+        <h2>Project Name Here</h2>
+        <p class="pfc-desc">
+          A longer description of the project. What does it do? Why did you build it? 
+          What did you learn? Edit this text to describe your project.
+        </p>
+        <div class="pfc-links">
+          <a href="#" class="btn-ghost-sm" target="_blank">GitHub →</a>
+          <a href="#" class="btn-ghost-sm" target="_blank">Live Demo →</a>
+        </div>
+      </div>
+
+      <div class="project-full-card" data-cat="other" style="--c:#b5ff4d">
+        <div class="pfc-header">
+          <span class="pfc-num mono">03</span>
+          <div class="pfc-tags">
+            <span class="skill-pill">Tag Here</span>
+          </div>
+        </div>
+        <h2>Project Name Here</h2>
+        <p class="pfc-desc">
+          A longer description of the project. What does it do? Why did you build it? 
+          What did you learn? Edit this text to describe your project.
+        </p>
+        <div class="pfc-links">
+          <a href="#" class="btn-ghost-sm" target="_blank">GitHub →</a>
+          <a href="#" class="btn-ghost-sm" target="_blank">Live Demo →</a>
+        </div>
+      </div>
+
+      <div class="project-full-card" data-cat="web" style="--c:#ff2d78">
+        <div class="pfc-header">
+          <span class="pfc-num mono">04</span>
+          <div class="pfc-tags">
+            <span class="skill-pill">Tag Here</span>
+          </div>
+        </div>
+        <h2>Project Name Here</h2>
+        <p class="pfc-desc">
+          A longer description of the project. What does it do? Why did you build it? 
+          What did you learn? Edit this text to describe your project.
+        </p>
+        <div class="pfc-links">
+          <a href="#" class="btn-ghost-sm" target="_blank">GitHub →</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <span class="mono">© 2025 Ansh Mistry</span>
+    <span class="mono">Built with ♥</span>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

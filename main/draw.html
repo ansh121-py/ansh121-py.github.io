@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw</title>
+    <style>
+        canvas {
+            border: 1px solid #ccc;
+            height: 280px; /* Scale up for better drawing experience */
+            width: 280px;
+            image-rendering: pixelated; /* Ensure crisp edges when scaled */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="28" height="28"></canvas>
+    <script>
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.moveTo(0, 0);
+ctx.lineTo(100, 100);
+ctx.stroke();
+</script>
+</body>
+</html>

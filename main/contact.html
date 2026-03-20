@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Ansh Mistry</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="noise"></div>
+  <nav>
+    <a href="index.html" class="nav-logo">AM</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+      <li><a href="random.html">Random</a></li>
+    </ul>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <main class="page-main">
+    <div class="page-header">
+      <span class="mono page-eyebrow">// Say Hello</span>
+      <h1 class="page-title">Contact</h1>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-info">
+        <p class="contact-intro">
+          <!-- EDIT: Your contact intro -->
+          Have a project in mind, a question, or just want to connect? 
+          I'd love to hear from you. Fill in your message below or reach me directly.
+        </p>
+
+        <div class="contact-links">
+          <!-- EDIT: Replace with your actual links/info -->
+          <a class="contact-link" href="mailto:your@email.com">
+            <span class="cl-icon">✉</span>
+            <div>
+              <span class="mono cl-label">Email</span>
+              <span class="cl-value">your@email.com</span>
+            </div>
+          </a>
+          <a class="contact-link" href="https://github.com/yourusername" target="_blank">
+            <span class="cl-icon">⌥</span>
+            <div>
+              <span class="mono cl-label">GitHub</span>
+              <span class="cl-value">github.com/yourusername</span>
+            </div>
+          </a>
+          <a class="contact-link" href="https://linkedin.com/in/yourusername" target="_blank">
+            <span class="cl-icon">◈</span>
+            <div>
+              <span class="mono cl-label">LinkedIn</span>
+              <span class="cl-value">linkedin.com/in/yourusername</span>
+            </div>
+          </a>
+          <!-- EDIT: Add more links (Twitter/X, Instagram, etc.) by duplicating above block -->
+        </div>
+      </div>
+
+      <div class="contact-form-col">
+        <!--
+          NOTE: For GitHub Pages (static hosting), this form cannot submit server-side.
+          Options to make it work:
+          1. Use Formspree (free): replace action="#" with your Formspree endpoint
+             e.g. action="https://formspree.io/f/yourcode"
+          2. Use Netlify Forms (if hosted on Netlify)
+          3. Use EmailJS (JavaScript-based, no server needed)
+          
+          For now, the form is styled and ready — just wire up your preferred service.
+        -->
+        <form class="contact-form" action="#" method="POST">
+          <div class="form-group">
+            <label for="name" class="mono">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your name" required />
+          </div>
+          <div class="form-group">
+            <label for="email" class="mono">Email</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label for="subject" class="mono">Subject</label>
+            <input type="text" id="subject" name="subject" placeholder="What's this about?" />
+          </div>
+          <div class="form-group">
+            <label for="message" class="mono">Message</label>
+            <textarea id="message" name="message" rows="6" placeholder="Your message here..." required></textarea>
+          </div>
+          <button type="submit" class="btn-primary">Send Message →</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span class="mono">© 2025 Ansh Mistry</span>
+    <span class="mono">Built with ♥</span>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

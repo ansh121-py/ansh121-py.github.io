@@ -1,0 +1,27 @@
+body{
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    height: 46px;
+    display: flex;
+    align-items: center;
+}
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    display: block;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    transition: font-size .1s ease;
+}
+.navbar a:hover {
+    background-color: #dddddd;
+    color: black;
+    font-weight: bolder;
+    font-size: 20px;
+}
