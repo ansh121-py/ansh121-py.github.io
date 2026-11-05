@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mLs</title>
+    <link rel="shortcut icon" href="/assets/mLs.svg" type="image/x-icon">
+    <style>
+      body{
+        background-color: #2C444C;
+        padding-bottom: 60px;
+      }
+
+      .controls{
+        position: fixed;
+        justify-content: center;
+        display: flex;
+        flex-direction: row;
+        align-content: space-around;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #2c445c;
+      }
+
+      .controls button{
+        background-color: #0474C4;
+        border: none;
+        height: 35px;
+        border-radius: 5px;
+        margin: 15px;
+      }
+
+      .songs button{
+          border-radius: 3px;
+          background-color:#262B40;
+          color: #FFFFFF;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-weight: 300;
+          font-size: 20px;
+          width: 90vw;
+          text-align: left;
+          margin: 5px;
+          padding-left: 8px;
+          border: 2px solid #0f223c;
+      }
+
+      .songs button:hover{
+        background-color:#06457F;
+      }
+
+      .songs li{
+        color: #FFFFFF;
+        font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: 25px;
+      }
+    </style>
+</head>
+<body>
+  <input type="range" id="progress-bar" value="0" min="0" step="0.1" style="width: 50%;">
+  <audio id="audio" src=""></audio>
+  <div class="controls">
+      <button id="previous" >Previous</button>
+      <button id="play" >Play</button>
+      <button id="pause" >Pause</button>
+      <button id="next" >Next</button>
+      <img id="album-cover" src="" alt="">
+  </div>
+
+  <div class="songs">
+    <ol id="song-list"></ol>
+  </div>
+
+  <script>
+    const song_list = []
+    const song_list_element = document.getElementById("song-list");
+    const player = document.getElementById("audio");
+    const play_b = document.getElementById("play")
+    const pause_b = document.getElementById("pause")
+    const next_b = document.getElementById("next")
+    const previous_b = document.getElementById("previous")
+    const progressBar = document.getElementById('progress-bar');
+    const cover = document.getElementById('album-cover')
+
+    var current_song = 0
+
+    song = fetch('http://localhost:8000/api/songs')
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json(); // Returns another promise
+      })
+      .then(data => {
+        console.log(data);
+        console.log(data[2]["song_path"]);
+        for (const item of data) {
+          song_list.push(item["song_path"]); // Adds each item to the end of the new list
+
+          const li = document.createElement("li");
+
+          const button = document.createElement("button");
+
+          button.textContent = item["song_name"];
+
+          button.onclick = function() {
+            current_song = song_list.indexOf(item["song_path"]);
+
+            player.src = item["song_path"];
+            player.load();
+            player.play();
+            cover.src = "http://localhost:8000" + item["album_cover_path"];
+          };
+          li.appendChild(button);
+          song_list_element.appendChild(li);
+
+        };
+        console.log(song_list);
+        
+      })
+      .catch(error => console.error('Fetch error:', error));
+    
+    play_b.onclick = function() {
+      player.play();
+    };
+
+    pause_b.onclick = function() {
+      player.pause();
+    };
+
+    next_b.onclick = function() {
+      player.src = song_list[current_song]
+      if (current_song == song_list.length - 1){
+        current_song = 0;
+      }
+      else{
+        current_song ++;
+      }
+
+      player.load();
+      player.play();
+    };
+
+    previous_b.onclick = function() {
+      player.src = song_list[current_song]
+      if (current_song == song_list.length - 1){
+        current_song = song_list.length-1;
+      }
+      else{
+        current_song --;
+      }
+
+      player.load();
+      player.play();
+    };
+
+    player.addEventListener("ended", () =>{
+      next_b.click();
+    })
+
+    player.addEventListener("play", () => {
+        if ("mediaSession" in navigator) {
+            navigator.mediaSession.playbackState = "playing";
+        }
+    });
+
+    player.addEventListener("pause", () => {
+    if ("mediaSession" in navigator) {
+        navigator.mediaSession.playbackState = "paused";
+    }
+});
+    player.addEventListener('loadedmetadata', () => {
+    progressBar.max = player.duration;
+  });
+
+  // 2. Make the slider move forward automatically as the audio plays
+  player.addEventListener('timeupdate', () => {
+    progressBar.value = player.currentTime;
+  });
+
+  // 3. Let the user click/drag the slider to skip to a different part of the song
+  progressBar.addEventListener('input', () => {
+    player.currentTime = progressBar.value;
+  });
+
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.setActionHandler("play", () => player.play());
+      navigator.mediaSession.setActionHandler("pause", () => player.pause());
+
+      navigator.mediaSession.setActionHandler("nexttrack", () => {
+        next_b.click();
+      });
+
+      navigator.mediaSession.setActionHandler("previoustrack", () => {
+        previous_b.click();
+      });
+    }
+
+    function update_song_data(song){
+      navigator.mediaSession.metadata = new MediaMetadata({
+      title: song["song_name"],
+      artist: song["artist"],
+      album: song["album"]
+      });
+    }
+    
+  </script>
+</body>
+</html>
