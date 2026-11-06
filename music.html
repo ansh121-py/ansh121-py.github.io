@@ -84,7 +84,7 @@
 
     var current_song = 0
 
-    song = fetch('http://stem.mistrystudio.me/api/songs')
+    song = fetch('https://stem.mistrystudio.me/api/songs')
       .then(response => {
         if (!response.ok) throw new Error('Network response was not ok');
         return response.json(); // Returns another promise
@@ -107,7 +107,7 @@
             player.src = item["song_path"];
             player.load();
             player.play();
-            cover.src = "http://stem.mistrystudio.me" + item["album_cover_path"];
+            cover.src = "https://stem.mistrystudio.me" + item["album_cover_path"];
           };
           li.appendChild(button);
           song_list_element.appendChild(li);
