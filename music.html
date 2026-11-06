@@ -84,7 +84,7 @@
 
     var current_song = 0
 
-    song = fetch('http://localhost:8000/api/songs')
+    song = fetch('http://api.masterengineering121.workers.dev/api/songs')
       .then(response => {
         if (!response.ok) throw new Error('Network response was not ok');
         return response.json(); // Returns another promise
